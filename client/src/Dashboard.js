@@ -1,13 +1,19 @@
 import ReactPlayer from "react-player/youtube";
-import { useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import axios from "axios";
-import Login from "./Login";
 import useAuth from "./useAuth";
 import SpotifyWebApi from "spotify-web-api-node";
+import { Button, Card, Image, Text } from "@mantine/core";
+import { Resize, PlayerPlay, PlayerStop } from "tabler-icons-react";
+import { useViewportSize, useFullscreen, useScrollLock } from "@mantine/hooks";
 
 function Dashboard({ code }) {
 	const accessToken = useAuth(code);
 	const [spotifyData, setSpotifyData] = useState([]);
+	const [startStop, setStartStop] = useState(false);
+	const [playing, setPlaying] = useState(false);
+	const { toggle, fullscreen } = useFullscreen();
+	const [scrollLocked, setScrollLocked] = useScrollLock(true);
 	const spotifyApi = new SpotifyWebApi({
 		clientId: "4e7f97ca8905491ebc4e89f1674658dd",
 	});
@@ -19,39 +25,84 @@ function Dashboard({ code }) {
 
 	useEffect(() => {
 		if (!accessToken) return;
-		async function getSpotifyData() {
-			await axios
-				.post("http://localhost:3001/api/get-spotify-data", {
-					accessToken: accessToken,
-				})
-				.then((result) => setSpotifyData(JSON.parse(result.data)));
+		if (startStop) {
+			setPlaying(true);
+			async function getSpotifyData() {
+				await axios
+					.post("http://localhost:3001/api/get-spotify-data", {
+						accessToken: accessToken,
+					})
+					.then((result) => setSpotifyData(JSON.parse(result.data)));
+			}
+			getSpotifyData();
+			const interval = setInterval(() => getSpotifyData(), 1000);
+			return () => {
+				clearInterval(interval);
+			};
+		} else {
+			setPlaying(false);
 		}
-		getSpotifyData();
-		const interval = setInterval(() => getSpotifyData(), 1000);
-		return () => {
-			clearInterval(interval);
-		};
-	}, [accessToken]);
+	}, [accessToken, startStop]);
+
+	const { height, width } = useViewportSize();
 
 	return (
 		<div>
-			<Login />
+			{fullscreen ? (
+				<p className="hide"></p>
+			) : (
+				<div>
+					<Button
+						leftIcon={<Resize size={14} />}
+						variant="outline"
+						onClick={toggle}
+						color={fullscreen ? "red" : "blue"}
+					>
+						{fullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+					</Button>
+					{startStop ? (
+						<Button
+							onClick={() => setStartStop(false)}
+							variant="outline"
+							leftIcon={<PlayerStop size={14} />}
+							color="red"
+						>
+							Stop
+						</Button>
+					) : (
+						<Button
+							onClick={() => setStartStop(true)}
+							variant="outline"
+							leftIcon={<PlayerPlay size={14} />}
+							color="green"
+						>
+							Start
+						</Button>
+					)}
+				</div>
+			)}
 
-			<div className="App">
-				<header className="App-header">
+			<div className="holder">
+				<div>
 					<ReactPlayer
 						allow="autoplay"
 						muted={true}
-						playing={true}
-						allowFullScreen="1"
+						playing={playing}
 						url={spotifyData.link}
-						width="1280px"
-						height="720px"
+						width={width}
+						height={height}
+						className="frame"
 					/>
-					<p>Trackname: {spotifyData.track_name}</p>
-					<p>Artists: {spotifyData.artists}</p>
-					<p>Progress: {spotifyData.progress_s | 0} s</p>
-				</header>
+				</div>
+				<div className="bar" id="Card">
+					<Card>
+						<Card.Section>
+							<Image src={spotifyData.album_cover} height={160} />
+						</Card.Section>
+						<Text weight={500}>Trackname: {spotifyData.track_name}</Text>
+						<Text>Artists: {spotifyData.artists}</Text>
+					</Card>
+				</div>
 			</div>
 		</div>
 	);
