@@ -55,15 +55,32 @@ def get_current_track(acces_token):
         "link": youtube_link,
     }
 
-    return current_track_info
+    try:
+        resp_json["currently_playing_type"]
+
+        istrack = True
+    except:
+        istrack = False
+
+    return (current_track_info)
 
 
 def get_youtube_video(search_keyword):
-    videosSearch = VideosSearch(search_keyword, limit=1)
+    videosSearch = VideosSearch(search_keyword, limit=5)
 
     videosSearchResult = videosSearch.result()
 
-    return(videosSearchResult["result"][0]["link"])
+    results = []
+
+    index = 0
+
+    for video in videosSearchResult["result"]:
+        if "Lyric" not in videosSearchResult["result"][index]["title"]:
+            results.append(videosSearchResult["result"][index]["link"])
+
+        index = index + 1
+
+    return(results[0])
 
 
 def get_youtube_video_src(search):
@@ -82,14 +99,16 @@ def main(SPOTIFY_ACCES_TOKEN):
             print(json.dumps(current_track_info))
             # pprint(get_youtube_video_src(
             #     current_track_info["track_name"]+current_track_info["artists"]))
+        else:
+            print("notrack")
         last_track = current_track_info["track_name"]
 
     except:
-        print("There was an error")
+        print("notrack")
 
         # time.sleep(1)
 
 
-main(sys.argv[1])
+main("BQANJQtE0cuspsHqRr9YCm1Ia4pbDhxNHpF236PSRDVrmL8T4zYvXX1tRqy_Ix-VrJAi5SbniYxoGsvWRkc4iH5tc4N4c6Rj-ChVCmFNVGPyvKW4yhSI48hgy3fZDJknuIm5OhCd_OYDUy167zTPFg")
 
 sys.stdout.flush()
