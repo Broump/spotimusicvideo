@@ -10,7 +10,6 @@ import youtube_dl
 import sys
 from youtubesearchpython import VideosSearch
 
-SPOTIFY_ACCES_TOKEN = "BQACxElLfYmhiXNcrXvLuZo7ry5TwUtE-Rcvx7VC11xuoLWMwZVNeIeKKU0K9BbBOtsi1jgHtUuYHGj3wL9C2SjvKvh2_3GL6iOTZJu0mLD7IY9DqFncFwtkuBqAFEm6ZcqJNoPrim0-hULYtps7vw"
 SPOTIFY_GET_CURRENT_TRACK_URL = "https://api.spotify.com/v1/me/player"
 
 
@@ -74,7 +73,7 @@ def get_youtube_video_src(search):
     youtube_dl.main(opts)
 
 
-def main():
+def main(SPOTIFY_ACCES_TOKEN):
     last_track = ""
     # while True:
     try:
@@ -91,6 +90,6 @@ def main():
         # time.sleep(1)
 
 
-main()
+main(sys.argv[1])
 
 sys.stdout.flush()
