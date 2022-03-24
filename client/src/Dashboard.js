@@ -3,7 +3,7 @@ import { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import useAuth from "./useAuth";
 import SpotifyWebApi from "spotify-web-api-node";
-import { Button, Card, Image, Text } from "@mantine/core";
+import { Button, Card, Image, Text, Center } from "@mantine/core";
 import { Resize, PlayerPlay, PlayerStop } from "tabler-icons-react";
 import { useViewportSize, useFullscreen, useScrollLock } from "@mantine/hooks";
 
@@ -15,8 +15,10 @@ function Dashboard({ code }) {
 	const { toggle, fullscreen } = useFullscreen();
 	const [scrollLocked, setScrollLocked] = useScrollLock(true);
 	const spotifyApi = new SpotifyWebApi({
-		clientId: "4e7f97ca8905491ebc4e89f1674658dd",
+		clientId: process.env.REACT_APP_CLIENT_ID,
 	});
+
+	console.log(spotifyData.progress_s);
 
 	useEffect(() => {
 		if (!accessToken) return;
@@ -29,13 +31,13 @@ function Dashboard({ code }) {
 			setPlaying(true);
 			async function getSpotifyData() {
 				await axios
-					.post("http://localhost:3001/api/get-spotify-data", {
+					.post("https://spotimusicvideo.herokuapp.com/get-spotify-data", {
 						accessToken: accessToken,
 					})
 					.then((result) => setSpotifyData(JSON.parse(result.data)));
 			}
 			getSpotifyData();
-			const interval = setInterval(() => getSpotifyData(), 1000);
+			const interval = setInterval(() => getSpotifyData(), 3000);
 			return () => {
 				clearInterval(interval);
 			};
@@ -51,35 +53,40 @@ function Dashboard({ code }) {
 			{fullscreen ? (
 				<p className="hide"></p>
 			) : (
-				<div>
-					<Button
-						leftIcon={<Resize size={14} />}
-						variant="outline"
-						onClick={toggle}
-						color={fullscreen ? "red" : "blue"}
-					>
-						{fullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
-					</Button>
-					{startStop ? (
+				<Center mt="sm" mb="sm">
+					<div>
 						<Button
-							onClick={() => setStartStop(false)}
+							leftIcon={<Resize size={14} />}
 							variant="outline"
-							leftIcon={<PlayerStop size={14} />}
-							color="red"
+							onClick={toggle}
+							color={fullscreen ? "red" : "blue"}
+							m="sm"
 						>
-							Stop
+							{fullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
 						</Button>
-					) : (
-						<Button
-							onClick={() => setStartStop(true)}
-							variant="outline"
-							leftIcon={<PlayerPlay size={14} />}
-							color="green"
-						>
-							Start
-						</Button>
-					)}
-				</div>
+						{startStop ? (
+							<Button
+								onClick={() => setStartStop(false)}
+								variant="outline"
+								leftIcon={<PlayerStop size={14} />}
+								color="red"
+								m="sm"
+							>
+								Stop
+							</Button>
+						) : (
+							<Button
+								onClick={() => setStartStop(true)}
+								variant="outline"
+								leftIcon={<PlayerPlay size={14} />}
+								color="green"
+								m="sm"
+							>
+								Start
+							</Button>
+						)}
+					</div>
+				</Center>
 			)}
 
 			<div className="holder">

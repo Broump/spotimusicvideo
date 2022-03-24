@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Center } from "@mantine/core";
+import { Button, Center, Space } from "@mantine/core";
 import { BrandSpotify } from "tabler-icons-react";
 
 const AUTH_URL =
@@ -7,16 +7,19 @@ const AUTH_URL =
 
 export default function Login() {
 	return (
-		<Center>
-			<Button
-				component="a"
-				color="green"
-				href={AUTH_URL}
-				variant="outline"
-				rightIcon={<BrandSpotify size={14} />}
-			>
-				Login With Spotify{" "}
-			</Button>
-		</Center>
+		<div>
+			<Center mt={100}>
+				<Button
+					component="a"
+					color="green"
+					href={AUTH_URL}
+					size="lg"
+					variant="outline"
+					rightIcon={<BrandSpotify size={14} />}
+				>
+					Login With Spotify{" "}
+				</Button>
+			</Center>
+		</div>
 	);
 }

@@ -2,10 +2,8 @@ from pprint import pprint
 import requests
 import time
 import urllib.request
-import re
 import json
 import os
-import subprocess
 import youtube_dl
 import sys
 from youtubesearchpython import VideosSearch
@@ -109,6 +107,6 @@ def main(SPOTIFY_ACCES_TOKEN):
         # time.sleep(1)
 
 
-main("BQANJQtE0cuspsHqRr9YCm1Ia4pbDhxNHpF236PSRDVrmL8T4zYvXX1tRqy_Ix-VrJAi5SbniYxoGsvWRkc4iH5tc4N4c6Rj-ChVCmFNVGPyvKW4yhSI48hgy3fZDJknuIm5OhCd_OYDUy167zTPFg")
+main(sys.argv[1])
 
 sys.stdout.flush()
