@@ -55,20 +55,19 @@ app.post("/refresh", (req, res) => {
 		});
 });
 
-app.post("/api/get-spotify-data", async (req, res) => {
+app.post("/get-spotify-data", async (req, res) => {
 	const childPython = spawn("python3", ["main.py", req.body.accessToken]);
 
 	childPython.stdout.on("data", (data) => {
 		console.log(data.toString("utf8"));
 
 		if (data.toString("utf8") == "notrack") {
-			res.json("notrack");
 		} else {
 			res.json(data.toString("utf8"));
 		}
 	});
 });
 
-app.listen(3001, () => {
-	console.log("Server is running on PORT 3001");
+app.listen(process.env.PORT || 3001, () => {
+	console.log("Server is running on PORT 3001 or Heroku");
 });
