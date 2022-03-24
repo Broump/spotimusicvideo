@@ -18,8 +18,6 @@ function Dashboard({ code }) {
 		clientId: process.env.REACT_APP_CLIENT_ID,
 	});
 
-	console.log(spotifyData.progress_s);
-
 	useEffect(() => {
 		if (!accessToken) return;
 		spotifyApi.setAccessToken(accessToken);
